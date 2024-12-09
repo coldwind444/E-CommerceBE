@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +46,7 @@ public class ProductService {
 
     public String uploadImageToCloudinary(String localpath) {
         try {
+
             File file = new File(localpath);
 
             if (file.exists() && file.isFile()) {
@@ -79,7 +81,8 @@ public class ProductService {
 
         // phase 2: add image
         for (ProductImage img : product.getProductImageList()){
-            img.setImageUrl(uploadImageToCloudinary(img.getImageUrl()));
+            String cloudpUrl = uploadImageToCloudinary(img.getImageUrl());
+            img.setImageUrl(cloudpUrl);
             ProductImageDbResponse productImageDbResponse = productImageDao.addProductImage(img);
             if (productImageDbResponse.getErrorCode() != 0) {
                 int errorCode = productImageDbResponse.getErrorCode();
@@ -102,7 +105,8 @@ public class ProductService {
 
         // phase 4: add variant
         for (ProductVariant variant : product.getProductVariantList()) {
-            variant.setImageUrl(uploadImageToCloudinary(variant.getImageUrl()));
+            String cloudUrl = uploadImageToCloudinary(variant.getImageUrl());
+            variant.setImageUrl(cloudUrl);
             ProductVariantDbResponse productVariantDbResponse = productVariantDao.addProductVariant(variant);
             if (productVariantDbResponse.getErrorCode() != 0) {
                 int errorCode = productVariantDbResponse.getErrorCode();
@@ -134,7 +138,8 @@ public class ProductService {
 
         // phase 1: update variant
         for (ProductVariant variant : product.getProductVariantList()) {
-            variant.setImageUrl(uploadImageToCloudinary(variant.getImageUrl()));
+            String cloudUrl = uploadImageToCloudinary(variant.getImageUrl());
+            variant.setImageUrl(cloudUrl);
             ProductVariantDbResponse productVariantDbResponse = productVariantDao.updateProductVariant(variant);
             if (productVariantDbResponse.getErrorCode() != 0) {
                 int errorCode = productVariantDbResponse.getErrorCode();
@@ -157,7 +162,8 @@ public class ProductService {
 
         // phase 3: update image
         for (ProductImage img : product.getProductImageList()){
-            img.setImageUrl(uploadImageToCloudinary(img.getImageUrl()));
+            String cloudUrl = uploadImageToCloudinary(img.getImageUrl());
+            img.setImageUrl(cloudUrl);
             ProductImageDbResponse productImageDbResponse = productImageDao.updateProductImage(img);
             if (productImageDbResponse.getErrorCode() != 0) {
                 int errorCode = productImageDbResponse.getErrorCode();

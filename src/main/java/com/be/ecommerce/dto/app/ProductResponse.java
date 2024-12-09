@@ -3,10 +3,6 @@ package com.be.ecommerce.dto.app;
 import com.be.ecommerce.model.Product;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.SuperBuilder;
-
-import java.util.Dictionary;
-import java.util.HashMap;
 import java.util.List;
 
 @Data
