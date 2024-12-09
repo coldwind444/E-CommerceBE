@@ -14,22 +14,54 @@ import com.be.ecommerce.model.Product;
 import com.be.ecommerce.model.ProductImage;
 import com.be.ecommerce.model.ProductVariant;
 import com.be.ecommerce.model.VariantProperty;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductService {
     @Autowired
     private ProductDaoImpl productDao;
+
     @Autowired
     private ProductImageDaoImpl productImageDao;
+
     @Autowired
     private ProductVariantDaoImpl productVariantDao;
+
     @Autowired
     private VariantPropertyDaoImpl variantPropertyDao;
+
+    @Autowired
+    private Cloudinary cloudinary;
+
+    public String uploadImageToCloudinary(String localpath) {
+        try {
+            File file = new File(localpath);
+
+            if (file.exists() && file.isFile()) {
+                // Upload the image file to Cloudinary and get the result as a map
+                Map uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
+
+                // Extract the URL of the uploaded image
+
+                // Return the image URL
+                return (String) uploadResult.get("url");
+            } else {
+                throw new IllegalArgumentException("File does not exist or is not a valid file.");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error uploading image to Cloudinary", e);
+        }
+    }
 
     public ProductResponse addProduct(Product product) {
         List<ErrorLog> logs = new ArrayList<>();
@@ -47,6 +79,7 @@ public class ProductService {
 
         // phase 2: add image
         for (ProductImage img : product.getProductImageList()){
+            img.setImageUrl(uploadImageToCloudinary(img.getImageUrl()));
             ProductImageDbResponse productImageDbResponse = productImageDao.addProductImage(img);
             if (productImageDbResponse.getErrorCode() != 0) {
                 int errorCode = productImageDbResponse.getErrorCode();
@@ -69,6 +102,7 @@ public class ProductService {
 
         // phase 4: add variant
         for (ProductVariant variant : product.getProductVariantList()) {
+            variant.setImageUrl(uploadImageToCloudinary(variant.getImageUrl()));
             ProductVariantDbResponse productVariantDbResponse = productVariantDao.addProductVariant(variant);
             if (productVariantDbResponse.getErrorCode() != 0) {
                 int errorCode = productVariantDbResponse.getErrorCode();
@@ -100,6 +134,7 @@ public class ProductService {
 
         // phase 1: update variant
         for (ProductVariant variant : product.getProductVariantList()) {
+            variant.setImageUrl(uploadImageToCloudinary(variant.getImageUrl()));
             ProductVariantDbResponse productVariantDbResponse = productVariantDao.updateProductVariant(variant);
             if (productVariantDbResponse.getErrorCode() != 0) {
                 int errorCode = productVariantDbResponse.getErrorCode();
@@ -122,6 +157,7 @@ public class ProductService {
 
         // phase 3: update image
         for (ProductImage img : product.getProductImageList()){
+            img.setImageUrl(uploadImageToCloudinary(img.getImageUrl()));
             ProductImageDbResponse productImageDbResponse = productImageDao.updateProductImage(img);
             if (productImageDbResponse.getErrorCode() != 0) {
                 int errorCode = productImageDbResponse.getErrorCode();

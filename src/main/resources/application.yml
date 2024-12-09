@@ -11,3 +11,9 @@ server:
   port: 8080
   servlet:
     context-path: /e-commerce
+
+media:
+  cloudinary:
+    cloudName: ${MEDIA_CLOUDINARY_CLOUD_NAME}
+    apiKey: ${MEDIA_CLOUDINARY_API_KEY}
+    apiSecret: ${MEDIA_CLOUDINARY_API_SECRET}
