@@ -103,4 +103,20 @@ public class ProductService {
                 .build();
 
     }
+
+    public ProductResponse getProductById(int id) {
+        ProductDbResponse productDbResponse = productDao.getProduct(id);
+        int status = (productDbResponse.getErrorCode() == 0) ? 200 : 500;
+
+        String msg = status == 200 ? "Process exit without any exceptions :)" :
+                                     "Process exit with errors :(" ;
+
+        return ProductResponse.builder().
+                status(status).
+                message(msg).
+                errorCode(productDbResponse.getErrorCode())
+                .errorMessage(productDbResponse.getMessage())
+                .product(productDbResponse.getProduct())
+                .build();
+    }
 }

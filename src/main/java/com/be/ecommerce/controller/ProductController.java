@@ -40,9 +40,16 @@ public class ProductController {
         return ResponseEntity.status(productResponse.getStatus()).body(productResponse);
     }
 
+    @GetMapping("/get/{id}")
+    public ResponseEntity<ProductResponse> getProduct(@PathVariable int id) {
+        ProductResponse productResponse = productService.getProductById(id);
+        return ResponseEntity.status(productResponse.getStatus()).body(productResponse);
+    }
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ProductResponse> deleteProduct(@PathVariable int id) {
         ProductResponse productResponse = productService.deleteProduct(id);
         return ResponseEntity.status(productResponse.getStatus()).body(productResponse);
     }
+
 }

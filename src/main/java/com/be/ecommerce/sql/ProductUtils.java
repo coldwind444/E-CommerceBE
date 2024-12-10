@@ -7,7 +7,7 @@ public enum ProductUtils {
     ADD_PRODUCT("{CALL InsertProduct(?,?,?,?,?,?)}"),
     UPDATE_PRODUCT("{CALL UpdateProduct(?,?,?,?,?)}"),
     DELETE_PRODUCT("{CALL DeleteProduct(?)}"),
-    GET_PRODUCT_BY_ID("{CALL GetProductById(?)}"),
+    GET_PRODUCT_BY_ID("{CALL sp_get_product_by_id(?)}"),
     GET_ALL_PRODUCTS("{CALL sp_get_products_by_seller(?)}"),
     ;
 

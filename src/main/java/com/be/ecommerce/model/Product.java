@@ -12,13 +12,18 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Product {
+    // general
     int productId;
     String productName;
     int quantity;
     BigDecimal productPrice;
+    String productDescription;
+    String imgUrl;
+
+    // optional
     int sellerId;
     String shopName;
-    String productDescription;
+    String shopDescription;
     int categoryId;
-    String imgUrl;
+    String categoryName;
 }

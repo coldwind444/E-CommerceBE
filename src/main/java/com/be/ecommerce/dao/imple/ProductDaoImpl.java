@@ -9,10 +9,7 @@ import org.springframework.stereotype.Repository;
 import com.be.ecommerce.sql.ProductUtils;
 
 import java.math.BigDecimal;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -132,9 +129,9 @@ public class ProductDaoImpl implements ProductDao {
                 BigDecimal price = rs.getBigDecimal(3);
                 int quantity = rs.getInt(4);
                 String shopName = rs.getString(5);
-                String description = rs.getString(6);
+                String shopDescription = rs.getString(6);
                 String url = rs.getString(7);
-                Product product = new Product(id, name, quantity, price, sellerId, shopName, description, 0, null);
+                Product product = new Product(id, name, quantity, price, null, url, -1, shopName, shopDescription, -1, null);
                 list.add(product);
             }
 
@@ -143,6 +140,49 @@ public class ProductDaoImpl implements ProductDao {
                     sqlState("OK").
                     message(null).
                     productList(list)
+                    .build();
+
+        } catch (SQLException e){
+            return ProductDbResponse.builder().
+                    errorCode(e.getErrorCode()).
+                    sqlState(e.getSQLState()).
+                    message(e.getMessage())
+                    .build();
+        }
+    }
+
+    @Override
+    public ProductDbResponse getProduct(int productId){
+        try (Connection conn = Objects.requireNonNull(Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection())){
+            // call procedure
+            CallableStatement stmt = conn.prepareCall(ProductUtils.GET_PRODUCT_BY_ID.getCall());
+
+            // pass param
+            stmt.setInt(1, productId);
+
+            // execute
+            ResultSet rs = stmt.executeQuery();
+
+            // retrieve data
+            Product product = null;
+            if (rs.next()){
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                BigDecimal price = rs.getBigDecimal(3);
+                int quantity = rs.getInt(4);
+                String productDescription = rs.getString(5);
+                String shopName = rs.getString(6);
+                String shopDescription = rs.getString(7);
+                String categoryName = rs.getString(8);
+                String url = rs.getString(9);
+                product = new Product(id, name, quantity, price, productDescription, url, -1, shopName, shopDescription, -1, categoryName);
+            }
+
+            return ProductDbResponse.builder().
+                    errorCode(0).
+                    sqlState("OK").
+                    message(null).
+                    product(product)
                     .build();
 
         } catch (SQLException e){
