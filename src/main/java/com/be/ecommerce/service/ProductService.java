@@ -136,4 +136,8 @@ public class ProductService {
                 .productList(productDbResponse.getProductList())
                 .build();
     }
+
+    public String getStock(int id){
+        return productDao.getStock(id);
+    }
 }

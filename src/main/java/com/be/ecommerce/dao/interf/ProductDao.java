@@ -12,4 +12,5 @@ public interface ProductDao {
     ProductDbResponse getProduct(int id);
     ProductDbResponse getAllProducts(int sellerId);
     ProductDbResponse getAllProductsWithFilter(int sellerId, String search, BigDecimal min, BigDecimal max, String order);
+    String getStock(int id);
 }

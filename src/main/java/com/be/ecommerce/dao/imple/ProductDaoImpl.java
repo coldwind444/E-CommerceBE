@@ -195,6 +195,50 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
+    public String getStock(int id) {
+        Connection conn = null;
+        CallableStatement stmt = null;
+
+        try {
+            // Validate data source and get connection
+            conn = Objects.requireNonNull(jdbcTemplate.getDataSource(), "DataSource cannot be null").getConnection();
+
+            // Prepare callable statement
+            stmt = conn.prepareCall(ProductUtils.GET_STOCK_PRODUCTS.getCall());
+
+            // Register output parameter for function return value
+            stmt.registerOutParameter(1, java.sql.Types.VARCHAR);
+
+            // Set input parameter
+            stmt.setInt(2, id);
+
+            // Execute the function
+            stmt.execute();
+
+            // Retrieve and return the result
+            return stmt.getString(1);
+
+        } catch (SQLException e) {
+            // Log the exception
+            e.printStackTrace();
+
+            // Optionally rethrow or return a default error value
+            return "Error retrieving stock information";
+
+        } finally {
+            // Ensure resources are closed
+            try {
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException closeEx) {
+                closeEx.printStackTrace();
+            }
+        }
+    }
+
+
+
+    @Override
     public ProductDbResponse getAllProductsWithFilter(int sellerId, String search, BigDecimal min, BigDecimal max, String order){
         try (Connection conn = Objects.requireNonNull(Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection())){
             // call procedure

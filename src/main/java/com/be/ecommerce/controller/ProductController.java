@@ -86,5 +86,10 @@ public class ProductController {
         return ResponseEntity.status(productResponse.getStatus()).body(productResponse);
     }
 
+    @GetMapping("/stock/{id}")
+    public ResponseEntity<String> getStock(@PathVariable int id) {
+        System.out.println(productService.getStock(id));
+        return ResponseEntity.status(200).body(productService.getStock(id));
+    }
 
 }
