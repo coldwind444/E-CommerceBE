@@ -9,6 +9,7 @@ public enum ProductUtils {
     DELETE_PRODUCT("{CALL DeleteProduct(?)}"),
     GET_PRODUCT_BY_ID("{CALL sp_get_product_by_id(?)}"),
     GET_ALL_PRODUCTS("{CALL sp_get_products_by_seller(?)}"),
+    GET_ALL_PRODUCTS_WITH_FILTER("{CALL sp_get_seller_products(?,?,?,?,?) }")
     ;
 
     ProductUtils(String call){

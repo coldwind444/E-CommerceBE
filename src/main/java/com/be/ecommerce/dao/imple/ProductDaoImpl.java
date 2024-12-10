@@ -193,4 +193,55 @@ public class ProductDaoImpl implements ProductDao {
                     .build();
         }
     }
+
+    @Override
+    public ProductDbResponse getAllProductsWithFilter(int sellerId, String search, BigDecimal min, BigDecimal max, String order){
+        try (Connection conn = Objects.requireNonNull(Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection())){
+            // call procedure
+            CallableStatement stmt = conn.prepareCall(ProductUtils.GET_ALL_PRODUCTS_WITH_FILTER.getCall());
+
+            // validate
+            if (order != null && !order.equalsIgnoreCase("asc") && !order.equalsIgnoreCase("desc")) {
+                order = null;
+            }
+
+            // pass param
+            stmt.setInt(1, sellerId);
+            stmt.setString(2, search);
+            stmt.setBigDecimal(3, min);
+            stmt.setBigDecimal(4, max);
+            stmt.setString(5, order);
+
+            // execute
+            ResultSet rs = stmt.executeQuery();
+
+            // retrieve data
+            List<Product> list = new ArrayList<>();
+            while (rs.next()){
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                BigDecimal price = rs.getBigDecimal(3);
+                int quantity = rs.getInt(4);
+                String productDescription = rs.getString(5);
+                String categoryName = rs.getString(6);
+                String url = rs.getString(7);
+                Product product = new Product(id, name, quantity, price, productDescription, url, -1, null, null, -1, categoryName);
+                list.add(product);
+            }
+
+            return ProductDbResponse.builder().
+                    errorCode(0).
+                    sqlState("OK").
+                    message(null).
+                    productList(list)
+                    .build();
+
+        } catch (SQLException e){
+            return ProductDbResponse.builder().
+                    errorCode(e.getErrorCode()).
+                    sqlState(e.getSQLState()).
+                    message(e.getMessage())
+                    .build();
+        }
+    }
 }

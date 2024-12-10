@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Map;
 
 @Service
@@ -117,6 +118,22 @@ public class ProductService {
                 errorCode(productDbResponse.getErrorCode())
                 .errorMessage(productDbResponse.getMessage())
                 .product(productDbResponse.getProduct())
+                .build();
+    }
+
+    public ProductResponse getAllProductsWithFilter(int sellerId, String search, BigDecimal min, BigDecimal max, String order) {
+        ProductDbResponse productDbResponse = productDao.getAllProductsWithFilter(sellerId, search, min, max, order);
+        int status = (productDbResponse.getErrorCode() == 0) ? 200 : 500;
+
+        String msg = status == 200 ? "Process exit without any exceptions :)" :
+                                     "Process exit with errors :(" ;
+
+        return ProductResponse.builder().
+                status(status).
+                message(msg).
+                errorCode(productDbResponse.getErrorCode())
+                .errorMessage(productDbResponse.getMessage())
+                .productList(productDbResponse.getProductList())
                 .build();
     }
 }
