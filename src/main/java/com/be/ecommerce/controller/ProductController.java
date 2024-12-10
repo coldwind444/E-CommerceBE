@@ -34,15 +34,9 @@ public class ProductController {
         return ResponseEntity.status(productResponse.getStatus()).body(productResponse);
     }
 
-    @GetMapping("/get/{id}")
-    public ResponseEntity<ProductResponse> getProduct(@PathVariable int id) {
-        ProductResponse productResponse = productService.getProduct(id);
-        return ResponseEntity.status(productResponse.getStatus()).body(productResponse);
-    }
-
-    @GetMapping("/get-all")
-    public ResponseEntity<ProductResponse> getAllProducts() {
-        ProductResponse productResponse = productService.getAllProducts();
+    @GetMapping("/get-all/{sellerId}")
+    public ResponseEntity<ProductResponse> getAllProducts(@PathVariable int sellerId) {
+        ProductResponse productResponse = productService.getAllProducts(sellerId);
         return ResponseEntity.status(productResponse.getStatus()).body(productResponse);
     }
 

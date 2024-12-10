@@ -30,10 +30,11 @@ public class ProductDaoImpl implements ProductDao {
 
             // pass parameters
             stmt.setString(1, product.getProductName());
-            stmt.setString(2, product.getProductDescription());
-            stmt.setLong(3, product.getQuantity());
+            stmt.setInt(2, product.getQuantity());
+            stmt.setBigDecimal(3, product.getProductPrice());
             stmt.setInt(4, product.getSellerId());
-            stmt.setBigDecimal(5, product.getProductPrice());
+            stmt.setInt(5, product.getCategoryId());
+            stmt.setString(6, product.getProductDescription());
 
             // execute
             stmt.execute();
@@ -41,7 +42,7 @@ public class ProductDaoImpl implements ProductDao {
             return ProductDbResponse.builder().
                     errorCode(0).
                     sqlState("OK").
-                    message("Product has been added successfully")
+                    message(null)
                     .build();
 
         } catch (SQLException e){
@@ -60,10 +61,11 @@ public class ProductDaoImpl implements ProductDao {
             CallableStatement stmt = conn.prepareCall(ProductUtils.UPDATE_PRODUCT.getCall());
 
             // pass parameters
-            stmt.setString(1, product.getProductName());
-            stmt.setString(2, product.getProductDescription());
-            stmt.setLong(3, product.getQuantity());
+            stmt.setInt(1, product.getProductId());
+            stmt.setString(2, product.getProductName());
+            stmt.setInt(3, product.getQuantity());
             stmt.setBigDecimal(4, product.getProductPrice());
+            stmt.setString(5, product.getProductDescription());
 
             // execute
             stmt.execute();
@@ -71,7 +73,7 @@ public class ProductDaoImpl implements ProductDao {
             return ProductDbResponse.builder().
                     errorCode(0).
                     sqlState("OK").
-                    message("Product has been updated successfully")
+                    message(null)
                     .build();
 
         } catch (SQLException e){
@@ -98,7 +100,7 @@ public class ProductDaoImpl implements ProductDao {
             return ProductDbResponse.builder().
                     errorCode(0).
                     sqlState("OK").
-                    message("Product has been deleted successfully")
+                    message(null)
                     .build();
 
         } catch (SQLException e){
@@ -111,55 +113,13 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public ProductDbResponse getProduct(int id) {
-        try (Connection conn = Objects.requireNonNull(Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection())){
-            // call procedure
-            CallableStatement stmt = conn.prepareCall(ProductUtils.GET_PRODUCT_BY_ID.getCall());
-
-            // pass parameter
-            stmt.setInt(1, id);
-
-            // execute
-            ResultSet rs = stmt.executeQuery();
-
-            // retrieve data
-            int productId = rs.getInt(1);
-            String productName = rs.getString(2);
-            String productDescription = rs.getString(3);
-            int quantity = rs.getInt(4);
-            BigDecimal price = rs.getBigDecimal(5);
-            int sellerUserId = rs.getInt(6);
-
-            // map data to model
-            Product product = Product.builder().
-                                productId(productId).
-                                productName(productName).
-                                productDescription(productDescription).
-                                quantity(quantity).
-                                productPrice(price).
-                                sellerId(sellerUserId)
-                                .build();
-
-            return ProductDbResponse.builder().
-                                    errorCode(0).
-                                    sqlState("OK").
-                                    message("Product has been found").
-                                    product(product)
-                                    .build();
-        } catch (SQLException e){
-            return ProductDbResponse.builder().
-                    errorCode(e.getErrorCode()).
-                    sqlState(e.getSQLState()).
-                    message(e.getMessage())
-                    .build();
-        }
-    }
-
-    @Override
-    public ProductDbResponse getAllProducts(){
+    public ProductDbResponse getAllProducts(int sellerId){
         try (Connection conn = Objects.requireNonNull(Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection())){
             // call procedure
             CallableStatement stmt = conn.prepareCall(ProductUtils.GET_ALL_PRODUCTS.getCall());
+
+            // pass param
+            stmt.setInt(1, sellerId);
 
             // execute
             ResultSet rs = stmt.executeQuery();
@@ -169,18 +129,19 @@ public class ProductDaoImpl implements ProductDao {
             while (rs.next()){
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
-                String description = rs.getString(3);
+                BigDecimal price = rs.getBigDecimal(3);
                 int quantity = rs.getInt(4);
-                BigDecimal price = rs.getBigDecimal(5);
-                int sellerId = rs.getInt(6);
-                Product product = new Product(id, name, quantity, price, sellerId, description, null, null, null);
+                String shopName = rs.getString(5);
+                String description = rs.getString(6);
+                String url = rs.getString(7);
+                Product product = new Product(id, name, quantity, price, sellerId, shopName, description, 0, null);
                 list.add(product);
             }
 
             return ProductDbResponse.builder().
                     errorCode(0).
                     sqlState("OK").
-                    message("Return all products").
+                    message(null).
                     productList(list)
                     .build();
 

@@ -7,6 +7,6 @@ public interface ProductDao {
     ProductDbResponse addProduct(Product product);
     ProductDbResponse updateProduct(Product product);
     ProductDbResponse deleteProduct(int productId);
-    ProductDbResponse getProduct(int id);
-    ProductDbResponse getAllProducts();
+  //  ProductDbResponse getProduct(int id);
+    ProductDbResponse getAllProducts(int sellerId);
 }

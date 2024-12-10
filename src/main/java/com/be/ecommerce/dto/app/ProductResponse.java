@@ -20,5 +20,6 @@ public class ProductResponse {
     List<Product> productList;
 
     // logs
-    List<ErrorLog> errorLogList;
+    int errorCode;
+    String errorMessage;
 }

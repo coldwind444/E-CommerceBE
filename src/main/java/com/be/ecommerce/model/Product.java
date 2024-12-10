@@ -17,9 +17,8 @@ public class Product {
     int quantity;
     BigDecimal productPrice;
     int sellerId;
+    String shopName;
     String productDescription;
-
-    List<ProductVariant> productVariantList;
-    List<VariantProperty> variantPropertyList;
-    List<ProductImage> productImageList;
+    int categoryId;
+    String imgUrl;
 }
